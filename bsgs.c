@@ -37,6 +37,35 @@ void free_bsgs( bsgs_t *b )
     free_vec( &(b->bs_vals) );
 }
 
+int compute_dlog( bsgs_t *b, unsigned long *rop, const mpz_t value )
+{
+    mpz_t gamma;
+    mpz_init_set( gamma, value );
+
+    unsigned long i = 0;
+    unsigned long j = 0;
+    while( mpz_cmp( b->bs_vals.el[i], gamma ) ) {
+        i++;
+
+        if( i == b->sqrt_order ) {
+            i = 0;
+            j++;
+            mpz_mul( gamma, gamma, b->a_minus_m );
+            mpz_mod( gamma, gamma, b->modulus );
+        }
+
+        if( j*(b->sqrt_order)+i > b->order ) {
+            mpz_clear( gamma );
+            return 1;
+        }
+    }
+
+    *rop = j*(b->sqrt_order)+1;
+    return 0;
+}
+
+/*******************************************************************/
+
 void print_bsgs_t( bsgs_t *b ) {
     fprint_bsgs_t( stdout, b );
 }
@@ -57,6 +86,8 @@ void fprint_bsgs_t( FILE *f, bsgs_t *b )
 
 int test_bsgs_basic( verbose ) 
 {
+    int ret_val = 0;
+
     bsgs_t b;
 
     mpz_t base;
@@ -73,7 +104,23 @@ int test_bsgs_basic( verbose )
     {
         if( verbose )
             print_bsgs_t( &b );
-        return 1;
+
+        ret_val = 1;
+    }     
+
+    unsigned long res;
+    mpz_t value;
+    mpz_init_set_ui( value, 6 );
+    if( compute_dlog( &b, &res, value ) ) {
+        if( verbose )
+            printf( "Did not find log\n" );
+        ret_val = 1;
+    }
+
+    if( res != 9 ) {
+        if( verbose ) 
+            printf( "Returned %lu, expected 9\n", res );
+        ret_val = 1;
     }
 
     free_bsgs( &b );
