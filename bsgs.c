@@ -60,7 +60,7 @@ int compute_dlog( bsgs_t *b, unsigned long *rop, const mpz_t value )
         }
     }
 
-    *rop = j*(b->sqrt_order)+1;
+    *rop = j*(b->sqrt_order)+i;
     return 0;
 }
 
@@ -96,7 +96,7 @@ int test_bsgs_basic( verbose )
     mpz_t modulus;
     mpz_init_set_ui( modulus, 11 );
 
-    init_bsgs( &b, base, modulus, 10 );
+    init_bsgs( &b, base, modulus, 11 );
 
     if( b.sqrt_order != 4 || 
         mpz_cmp_ui( b.a_minus_m, 9 ) || 
@@ -125,5 +125,62 @@ int test_bsgs_basic( verbose )
 
     free_bsgs( &b );
 
-    return 0;
+    return ret_val;
+}
+
+int test_bsgs_small( verbose )
+{
+    int ret_val = 0;
+
+    bsgs_t b;
+
+    mpz_t base;
+    mpz_init_set_ui( base, 3 );
+
+    mpz_t modulus;
+    mpz_init_set_ui( modulus, 77 );
+
+    init_bsgs( &b, base, modulus, 30 );
+
+    unsigned long res;
+    mpz_t value;
+    mpz_init_set_ui( value, 69 );   
+    compute_dlog( &b, &res, value );
+
+    if( res != 21 ) {
+        if( verbose ) { 
+            printf( "Returned %lu, expected 21\n", res );
+            print_bsgs_t( &b );
+        }
+        ret_val = 1;
+    }
+
+    mpz_init_set_ui( value, 58 );   
+    compute_dlog( &b, &res, value );
+
+    if( res != 26 ) {
+        if( verbose ) 
+            printf( "Returned %lu, expected 26\n", res );
+            print_bsgs_t( &b );
+        ret_val = 1;
+    }
+
+    free_bsgs( &b );
+
+    mpz_init_set_ui( modulus, 82 );
+    mpz_init_set_ui( value, 55 );
+    init_bsgs( &b, base, modulus, 8 );
+    compute_dlog( &b, &res, value );
+
+    if( res != 7 ) {
+        if( verbose ) {
+            printf( "Returned %lu, expected 7\n" );
+            print_bsgs_t( &b );
+        }
+        ret_val = 1;
+    }
+
+    free_bsgs( &b );
+
+    return ret_val;
 }

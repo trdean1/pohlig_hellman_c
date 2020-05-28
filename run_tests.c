@@ -31,4 +31,11 @@ int main(int argc, char *argv[]) {
     } else {
         printf("Failed\n");
     }
+
+    printf("test_bsgs_small...\t");
+    if ( !test_bsgs_small( verbose ) ) {
+        printf("OK!\n");
+    } else {
+        printf("Failed\n");
+    }
 }

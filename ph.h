@@ -56,3 +56,4 @@ unsigned lazy_sieve( unsigned n,
 int test_sieve_basic( int verbose );
 int test_sieve_return_length( int verbose );
 int test_bsgs_basic( int verbose );
+int test_bsgs_small( int verbose );
