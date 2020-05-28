@@ -37,7 +37,7 @@ void free_bsgs( bsgs_t *b )
     free_vec( &(b->bs_vals) );
 }
 
-int compute_dlog( bsgs_t *b, unsigned long *rop, const mpz_t value )
+int compute_dlog_bsgs( bsgs_t *b, unsigned long *rop, const mpz_t value )
 {
     mpz_t gamma;
     mpz_init_set( gamma, value );
@@ -111,7 +111,7 @@ int test_bsgs_basic( verbose )
     unsigned long res;
     mpz_t value;
     mpz_init_set_ui( value, 6 );
-    if( compute_dlog( &b, &res, value ) ) {
+    if( compute_dlog_bsgs( &b, &res, value ) ) {
         if( verbose )
             printf( "Did not find log\n" );
         ret_val = 1;
@@ -145,7 +145,7 @@ int test_bsgs_small( verbose )
     unsigned long res;
     mpz_t value;
     mpz_init_set_ui( value, 69 );   
-    compute_dlog( &b, &res, value );
+    compute_dlog_bsgs( &b, &res, value );
 
     if( res != 21 ) {
         if( verbose ) { 
@@ -156,7 +156,7 @@ int test_bsgs_small( verbose )
     }
 
     mpz_init_set_ui( value, 58 );   
-    compute_dlog( &b, &res, value );
+    compute_dlog_bsgs( &b, &res, value );
 
     if( res != 26 ) {
         if( verbose ) 
@@ -170,7 +170,7 @@ int test_bsgs_small( verbose )
     mpz_init_set_ui( modulus, 82 );
     mpz_init_set_ui( value, 55 );
     init_bsgs( &b, base, modulus, 8 );
-    compute_dlog( &b, &res, value );
+    compute_dlog_bsgs( &b, &res, value );
 
     if( res != 7 ) {
         if( verbose ) {

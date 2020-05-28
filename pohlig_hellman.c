@@ -81,9 +81,9 @@ void compute_subgroup_dlogs( unsigned long *rop,
 
     //solve g_i^{x_i} = h_i mod M
     for( unsigned i = 0; i < op->n_primes; i++ ) {
-        compute_dlog( &( op->subgroup_bsgs[i] ),
-                      &( rop[i] ),
-                      vals.el[i] );
+        compute_dlog_bsgs( &( op->subgroup_bsgs[i] ),
+                           &( rop[i] ),
+                           vals.el[i] );
 
 
     }

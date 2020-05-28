@@ -57,9 +57,9 @@ void init_bsgs( bsgs_t *b,
 
 void free_bsgs( bsgs_t *b );
 
-int compute_dlog( bsgs_t *b,
-                  unsigned long *rop,
-                  const mpz_t value );
+int compute_dlog_bsgs( bsgs_t *b,
+                       unsigned long *rop,
+                       const mpz_t value );
 
 void print_bsgs_t( bsgs_t *b );
 
