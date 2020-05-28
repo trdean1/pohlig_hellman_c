@@ -174,7 +174,7 @@ int test_bsgs_small( verbose )
 
     if( res != 7 ) {
         if( verbose ) {
-            printf( "Returned %lu, expected 7\n" );
+            printf( "Returned %lu, expected 7\n", res );
             print_bsgs_t( &b );
         }
         ret_val = 1;

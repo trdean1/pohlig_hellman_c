@@ -21,12 +21,32 @@ typedef struct bsgs_ {
     vec_t bs_vals;
 } bsgs_t;
 
+typedef struct ph_ {
+    mpz_t modulus;
+    mpz_t generator;
+    vec_t subgroup_generators;
+    vec_t mpi;
+    vec_t mpi_inv;
+    bsgs_t *subgroup_bsgs;
+    unsigned long *primes;
+    unsigned n_primes;
+} ph_t;
+
 /***********************************************/
 
 void init_vec( vec_t *v, 
                int count );
 
 void free_vec( vec_t *v );
+
+void pp_vec( vec_t *v );
+
+int cmp_vec( vec_t *a, 
+             vec_t *b );
+
+int cmp_vec_ui( vec_t *a,
+                unsigned long *b,
+                int count );
 
 /***********************************************/
 
@@ -49,7 +69,26 @@ void fprint_bsgs_t( FILE *f,
 /***********************************************/
 
 unsigned lazy_sieve( unsigned n, 
-                     unsigned *primes ); 
+                     unsigned long *primes ); 
+
+/***********************************************/
+
+void init_ph( ph_t *rop,
+              const mpz_t generator,
+              const unsigned primorial_order );
+
+void free_ph( ph_t *op ); 
+
+
+void compute_subgroup_dlogs( unsigned long *rop, 
+                             ph_t *op,
+                             mpz_t value );
+
+void solve_congruences( mpz_t rop,
+                        ph_t *op,
+                        unsigned long *x_i );
+
+void print_ph( ph_t *op );
 
 /***********************************************/
 ////Test functions
@@ -57,3 +96,5 @@ int test_sieve_basic( int verbose );
 int test_sieve_return_length( int verbose );
 int test_bsgs_basic( int verbose );
 int test_bsgs_small( int verbose );
+int test_ph_basic( int verbose ); 
+int test_ph_crt( int verbose ); 

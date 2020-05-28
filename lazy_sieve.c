@@ -4,7 +4,7 @@
 //Assumes primes is allocated and is of length n*sizeof(unsigned)
 //returns number of primes actually found which should never be different
 //unless my padding of prime density estimation is too small...
-unsigned lazy_sieve(unsigned n, unsigned *primes) 
+unsigned lazy_sieve(unsigned n, unsigned long *primes) 
 { 
     float n_fl = (float) n;
     unsigned max_sieve = (unsigned) ceil( 1.33 * n_fl * log( n_fl ) );
@@ -22,7 +22,7 @@ unsigned lazy_sieve(unsigned n, unsigned *primes)
     } 
   
     unsigned count = 0;
-    for (unsigned p=2; p<=max_sieve; p++) { 
+    for (unsigned long p=2; p<=max_sieve; p++) { 
         if (sieve[p]) {
             primes[count] = p;
             count++;
@@ -42,7 +42,7 @@ unsigned lazy_sieve(unsigned n, unsigned *primes)
 int test_sieve_basic( int verbose ) 
 { 
     int n = 1000; 
-    unsigned *primes = malloc( n * sizeof( unsigned ) );
+    unsigned long *primes = malloc( n * sizeof( unsigned long ) );
     unsigned m = lazy_sieve(n, primes); 
 
     if( verbose ) 
@@ -53,11 +53,11 @@ int test_sieve_basic( int verbose )
     }
 
     if( verbose ) {
-    for( unsigned i = 0; i < n; i++ ) {
-        printf( "%4u ", primes[i] );
-        if ( (i+1) % 10 == 0 ) {
-            printf( "\n" );
-        }
+        for( unsigned i = 0; i < n; i++ ) {
+            printf( "%4lu ", primes[i] );
+            if ( (i+1) % 10 == 0 ) {
+                printf( "\n" );
+            }
         }
         printf( "\n" );
     }
@@ -72,7 +72,7 @@ int test_sieve_basic( int verbose )
 int test_sieve_return_length( int verbose )
 {
     for ( unsigned i = 10; i < 10000; i *= 2 ) {
-        unsigned *primes = malloc( i * sizeof( unsigned ) );
+        unsigned long *primes = malloc( i * sizeof( unsigned long ) );
         unsigned m = lazy_sieve( i, primes );
 
         if ( m != i ) {

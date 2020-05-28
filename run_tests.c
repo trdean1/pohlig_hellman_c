@@ -38,4 +38,19 @@ int main(int argc, char *argv[]) {
     } else {
         printf("Failed\n");
     }
+
+    printf("test_ph_basic...\t");
+    if ( !test_ph_basic( verbose ) ) {
+        printf("OK!\n");
+    } else {
+        printf("Failed\n");
+    }
+
+    printf("test_ph_crt...\t");
+    if ( !test_ph_crt( verbose ) ) {
+        printf("OK!\n");
+    } else {
+        printf("Failed\n");
+    }
+
 }
