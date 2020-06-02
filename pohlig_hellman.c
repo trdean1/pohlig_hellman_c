@@ -85,10 +85,66 @@ void compute_subgroup_dlogs( unsigned long *rop,
                            &( rop[i] ),
                            vals.el[i] );
 
+        gmp_printf("%Zd^%lu = %Zd\n", 
+                   op->subgroup_generators.el[i], 
+                   rop[i],
+                   vals.el[i] );
 
     }
 
     free_vec( &vals );
+}
+
+//g^x = h mod N, where |<g>| = p^e
+// <g> is a subgroup of order p^e where p is prime
+// and e \geq 1
+void compute_dlog_prime_power( unsigned long *rop,
+                               unsigned long p,
+                               unsigned long e,
+                               bsgs_t *bsgs, //base = gamma = g^p^(e-1)
+                               mpz_t generator,
+                               mpz_t modulus,
+                               mpz_t value )
+{
+    //Validate that we have the right bsgs struct
+    assert( p == bsgs->order );
+
+    //Must have \gamma = g^p^(e-1) as base
+    mpz_t test; mpz_init( test );
+    mpz_powm_ui( test, generator, p, modulus );
+    mpz_powm_ui( test, test, e-1, modulus );
+    assert( !mpz_cmp( test, bsgs->base ) );
+    mpz_clear( test );
+
+    mpz_t g_inv; mpz_init( g_inv );
+    mpz_invert( g_inv, generator, modulus );
+
+    unsigned long last_x = 0;
+    unsigned long x  = 0;
+
+    mpz_t h; mpz_init( h );
+    unsigned long pi = 1;
+    unsigned long pe = 1;
+    for( unsigned i = 0; i < e - 1; i++ )
+        pe *= 3;
+    *rop = 0;
+
+
+    for( unsigned i = 0; i < e; i++ ) {
+        mpz_powm_ui( h, g_inv, last_x, modulus ); //h[i] = g^{-x[i])
+        mpz_mul( h, h, value );  // h[i] = h * g^(-x[i])
+        mpz_powm_ui( h, h, pe, modulus ); // h[i] = (h[i])^p
+
+        compute_dlog_bsgs( bsgs, &x, h );
+
+        *rop += x*pi;
+        pi *= 3;
+        pe /= 3;
+        last_x = x;
+    }
+
+    mpz_clear( g_inv );
+    mpz_clear( h );
 }
 
 //Assumes rop is initialized
@@ -109,6 +165,16 @@ void solve_congruences( mpz_t rop,
      }
 
     mpz_mod( rop, rop, op->modulus );
+}
+
+//Everything must be initialized
+void compute_dlog( mpz_t result,
+                   ph_t *ph,
+                   mpz_t value )
+{
+    unsigned long *subgroup_x = malloc( ph->n_primes * sizeof( unsigned long ) );
+    compute_subgroup_dlogs( subgroup_x, ph, value );
+    solve_congruences( result, ph, subgroup_x );
 }
 
 /****************************************************************************/
@@ -195,6 +261,79 @@ int test_ph_crt( int verbose )
     if( mpz_cmp_ui( res, 57 ) ) {
         if( verbose )
             gmp_printf("Expected 57, got %Zd\n", res);
+        ret_val = 1;
+    }
+
+    free_ph( &ph );
+
+    return ret_val;
+}
+
+int test_ph_prime_power( int verbose )
+{
+    //<16> \in Z_37 has order 3^2
+
+    unsigned long result;
+    mpz_t generator; 
+    mpz_init_set_ui( generator, 16 );
+    mpz_t modulus;
+    mpz_init_set_ui( modulus, 37 );
+    mpz_t value;
+    mpz_init_set_ui( value, 12 ); 
+
+    mpz_t bsgs_base;
+    mpz_init( bsgs_base );
+    mpz_powm_ui( bsgs_base, generator, 3, modulus );
+
+    bsgs_t bsgs;
+    init_bsgs( &bsgs, bsgs_base, modulus, 3 );
+
+    compute_dlog_prime_power( &result,
+                              3,
+                              2,
+                              &bsgs,
+                              generator,
+                              modulus,
+                              value );
+
+    free_bsgs( &bsgs );
+    mpz_clear( generator );
+    mpz_clear( modulus );
+    mpz_clear( value );
+    mpz_clear( bsgs_base );
+
+
+    if( result == 7 )
+        return 0;
+    else {
+        if( verbose )
+            printf("Expected 7, got %lu\n", result );
+        return 1;
+    }
+}
+
+int test_ph_dlog_small( int verbose ) 
+{
+    int ret_val = 0;
+
+    unsigned long order = 4;
+
+    mpz_t generator;
+    mpz_init_set_ui( generator, 3 );
+
+    ph_t ph;
+
+    init_ph( &ph, generator, order );
+
+    mpz_t res; mpz_t value;
+    mpz_init( res );
+    mpz_init_set_ui( value, 117 );
+    
+    compute_dlog( res, &ph, value );
+
+    if( mpz_cmp_ui( res, 11 ) ) {
+        if( verbose )
+            gmp_printf("Expected 11, got %Zd\n", res);
         ret_val = 1;
     }
 

@@ -84,9 +84,21 @@ void compute_subgroup_dlogs( unsigned long *rop,
                              ph_t *op,
                              mpz_t value );
 
+void compute_dlog_prime_power( unsigned long *rop,
+                               unsigned long p,
+                               unsigned long e,
+                               bsgs_t *bsgs, 
+                               mpz_t generator,
+                               mpz_t modulus,
+                               mpz_t value );
+
 void solve_congruences( mpz_t rop,
                         ph_t *op,
                         unsigned long *x_i );
+
+void compute_dlog( mpz_t result,
+                   ph_t *ph,
+                   mpz_t value );
 
 void print_ph( ph_t *op );
 
@@ -94,7 +106,11 @@ void print_ph( ph_t *op );
 ////Test functions
 int test_sieve_basic( int verbose );
 int test_sieve_return_length( int verbose );
+
 int test_bsgs_basic( int verbose );
 int test_bsgs_small( int verbose );
+
 int test_ph_basic( int verbose ); 
 int test_ph_crt( int verbose ); 
+int test_ph_prime_power( int verbose );
+int test_ph_dlog_small( int verbose );

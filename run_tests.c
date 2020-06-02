@@ -53,4 +53,17 @@ int main(int argc, char *argv[]) {
         printf("Failed\n");
     }
 
+    printf("test_ph_prime_power...\t");
+    if ( !test_ph_prime_power( verbose ) ) {
+        printf("OK!\n");
+    } else {
+        printf("Failed\n");
+    }
+
+    printf("test_ph_dlog_small...\t");
+    if ( !test_ph_dlog_small( verbose ) ) {
+        printf("OK!\n");
+    } else {
+        printf("Failed\n");
+    }
 }
